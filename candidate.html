@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candidate experience: AI Screening Agent on WhatsApp &amp; SMS</title>
+<meta name="description" content="Candidate-facing prototype: applicants answer the agent's questions on WhatsApp or SMS, get updates, book interviews, ask why they weren't selected, and see their application data without logging in.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --line:#E2E8F0; --line-2:#CBD5E1; --bg:#F3F5F8; --ai:#0F766E; --ai-s:#ECFDF8; --ai-b:#A7F3D0; --amber:#92400E; --amber-s:#FFFBEB; --amber-b:#FDE68A; --rose:#9F1239; --rose-s:#FFF1F2; --rose-b:#FECDD3; --brand:#1D4ED8; --shadow: 0 1px 2px rgba(15,23,42,.05), 0 6px 18px -8px rgba(15,23,42,.12); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+  button { cursor: pointer; }
+  a { color: var(--brand); font-weight: 600; text-decoration: none; }
+  .top { background: #fff; border-bottom: 1px solid var(--line); }
+  .top-in { max-width: 1180px; margin: 0 auto; padding: 11px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: #25D366; color: #fff; display: grid; place-items: center; font-size: 15px; }
+  .brand small { font-weight: 500; color: var(--muted); font-size: 13px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 22px 24px 50px; display: grid; grid-template-columns: 1fr 380px; gap: 28px; align-items: start; }
+  h1 { font-size: 23px; letter-spacing: -0.02em; line-height: 1.2; }
+  .lead { color: var(--ink-2); margin-top: 6px; }
+  .who { font-size: 12px; font-weight: 700; color: var(--ai); text-transform: uppercase; letter-spacing: .07em; }
+  .scs { display: grid; gap: 10px; margin-top: 18px; }
+  .sc { text-align: left; background: #fff; border: 1.5px solid var(--line); border-radius: 13px; padding: 13px 15px; box-shadow: var(--shadow); display: flex; gap: 12px; transition: border-color .15s, transform .15s; }
+  .sc:hover { transform: translateY(-1px); border-color: var(--line-2); }
+  .sc.on { border-color: var(--ai); background: linear-gradient(180deg,#fff,var(--ai-s)); }
+  .av { width: 38px; height: 38px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; }
+  .sc b { display: block; font-size: 14.5px; }
+  .sc .w { font-size: 12.5px; color: var(--muted); }
+  .sc .d { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 13px; box-shadow: var(--shadow); padding: 15px 16px; margin-top: 16px; }
+  .card h2 { font-size: 14.5px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .steps { display: grid; gap: 8px; }
+  .st { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); }
+  .st .n { width: 22px; height: 22px; border-radius: 50%; background: #E2E8F0; color: var(--ink-2); font-size: 11.5px; font-weight: 700; display: grid; place-items: center; flex: none; transition: all .3s; }
+  .st.done .n { background: var(--ai); color: #fff; }
+  .st.done { color: var(--ink); }
+  .seg { display: inline-flex; background: #F1F5F9; border: 1px solid var(--line); border-radius: 9px; padding: 2px; }
+  .seg button { border: none; background: none; padding: 5px 11px; border-radius: 7px; font-weight: 600; font-size: 12.5px; color: var(--ink-2); }
+  .seg button.on { background: #fff; color: var(--ai); box-shadow: 0 1px 2px rgba(15,23,42,.1); }
+  .tip { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .kbd { font-size: 12px; background: #F1F5F9; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-weight: 600; color: var(--ink-2); }
+
+  /* Phone */
+  .phone { width: 370px; height: 740px; border: 11px solid #0B0F19; border-radius: 44px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 60px -28px rgba(15,23,42,.55); background: #ECE5DD; position: sticky; top: 18px; }
+  .phone.sms { background: #fff; }
+  .notch { height: 26px; background: #0B0F19; display: flex; justify-content: space-between; align-items: center; padding: 0 22px; color: #fff; font-size: 11.5px; font-weight: 600; flex: none; }
+  .wa-h { background: #075E54; color: #fff; padding: 9px 12px; display: flex; align-items: center; gap: 10px; flex: none; }
+  .phone.sms .wa-h { background: #F7F7F8; color: var(--ink); border-bottom: 1px solid var(--line); }
+  .wa-h .pa { width: 34px; height: 34px; border-radius: 50%; background: #128C7E; color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+  .phone.sms .wa-h .pa { background: #8E8E93; }
+  .wa-h b { display: block; font-size: 13.5px; }
+  .wa-h span { font-size: 11px; opacity: .85; }
+  .body { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .bub { max-width: 84%; padding: 7px 10px 5px; border-radius: 10px; font-size: 13px; line-height: 1.45; box-shadow: 0 1px 1px rgba(0,0,0,.07); white-space: pre-line; }
+  .bub.fresh, .div.fresh { animation: pop .22s ease; }
+  @keyframes pop { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  .bub.bot { background: #fff; align-self: flex-start; border-top-left-radius: 3px; }
+  .bub.me { background: #DCF8C6; align-self: flex-end; border-top-right-radius: 3px; }
+  .phone.sms .bub.bot { background: #E9E9EB; box-shadow: none; border-radius: 17px; }
+  .phone.sms .bub.me { background: #0A84FF; color: #fff; box-shadow: none; border-radius: 17px; }
+  .bub .tm { display: block; text-align: right; font-size: 10px; color: #8696A0; margin-top: 1px; }
+  .phone.sms .bub.me .tm { color: rgba(255,255,255,.75); }
+  .bub .lk { color: #0B57D0; text-decoration: underline; cursor: pointer; font-weight: 600; }
+  .phone.sms .bub.me .lk { color: #fff; }
+  .div { align-self: center; background: rgba(225,245,254,.95); color: #475569; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 8px; margin: 6px 0; box-shadow: 0 1px 1px rgba(0,0,0,.05); }
+  .phone.sms .div { background: none; box-shadow: none; color: #8E8E93; }
+  .typing { align-self: flex-start; background: #fff; border-radius: 10px; padding: 8px 12px; display: flex; gap: 3px; }
+  .phone.sms .typing { background: #E9E9EB; border-radius: 17px; }
+  .typing i { width: 6px; height: 6px; border-radius: 50%; background: #94A3B8; animation: blink 1s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes blink { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+  .opts { padding: 6px 8px 2px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; flex: none; background: transparent; }
+  .opt { border: 1px solid #B7E1D8; background: #fff; color: #075E54; font-weight: 600; font-size: 12.5px; padding: 7px 11px; border-radius: 18px; box-shadow: 0 1px 1px rgba(0,0,0,.06); }
+  .opt:hover { background: #F0FDF4; }
+  .opt.sys { border-style: dashed; color: var(--muted); border-color: var(--line-2); background: rgba(255,255,255,.8); }
+  .phone.sms .opt { border-color: #C7D2FE; color: #1D4ED8; }
+  .opt.pulse { animation: glow 1.6s ease-in-out infinite; }
+  @keyframes glow { 0%,100% { box-shadow: 0 0 0 0 rgba(15,118,110,0); } 50% { box-shadow: 0 0 0 4px rgba(15,118,110,.2); } }
+  .inbar { display: flex; gap: 6px; padding: 8px; background: #F0F2F5; flex: none; align-items: center; }
+  .phone.sms .inbar { background: #fff; border-top: 1px solid var(--line); }
+  .inbar input { flex: 1; border: none; border-radius: 20px; padding: 9px 14px; outline: none; background: #fff; font-size: 13px; }
+  .phone.sms .inbar input { border: 1px solid var(--line-2); }
+  .inbar button { width: 38px; height: 38px; border-radius: 50%; border: none; background: #00A884; color: #fff; font-size: 15px; flex: none; }
+  .phone.sms .inbar button { background: #0A84FF; }
+
+  /* In-phone web page */
+  .web { flex: 1; display: flex; flex-direction: column; background: #fff; min-height: 0; animation: slide .28s cubic-bezier(.2,.7,.2,1); }
+  @keyframes slide { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .url { background: #F1F3F4; padding: 7px 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); flex: none; }
+  .url button { border: none; background: none; font-size: 15px; color: var(--ink-2); padding: 0 4px; }
+  .url .bar { flex: 1; background: #fff; border-radius: 16px; padding: 5px 12px; font-size: 12px; color: var(--ink-2); }
+  .page { flex: 1; overflow-y: auto; padding: 16px 15px 22px; }
+  .page h3 { font-size: 17px; letter-spacing: -0.01em; }
+  .page .sm { font-size: 12px; color: var(--muted); }
+  .chip { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 99px; border: 1px solid; margin-top: 6px; }
+  .chip.ai { color: var(--ai); background: var(--ai-s); border-color: var(--ai-b); }
+  .chip.rose { color: var(--rose); background: var(--rose-s); border-color: var(--rose-b); }
+  .chip.amber { color: var(--amber); background: var(--amber-s); border-color: var(--amber-b); }
+  .sect { margin-top: 16px; }
+  .sect h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 7px; }
+  .tlx { display: grid; gap: 0; }
+  .tli { display: flex; gap: 10px; font-size: 13px; padding-bottom: 9px; position: relative; }
+  .tli .b { width: 18px; height: 18px; border-radius: 50%; background: #E2E8F0; color: #fff; font-size: 10px; display: grid; place-items: center; flex: none; margin-top: 1px; }
+  .tli.ok .b { background: #10B981; } .tli.bad .b { background: #F43F5E; } .tli.now .b { background: #F59E0B; }
+  .mh { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .mh td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+  .mh td.r { text-align: right; font-weight: 700; white-space: nowrap; }
+  .okc { color: #047857; } .badc { color: var(--rose); }
+  .bars { display: grid; gap: 7px; }
+  .bar2 { font-size: 12.5px; }
+  .bar2 .t { display: flex; justify-content: space-between; }
+  .bar2 .tr { height: 7px; background: #F1F5F9; border-radius: 99px; overflow: hidden; margin-top: 3px; }
+  .bar2 .tr i { display: block; height: 100%; border-radius: 99px; }
+  .note { font-size: 12px; color: var(--muted); background: #F8FAFC; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; margin-top: 8px; }
+  .acts { display: grid; gap: 7px; }
+  .wbtn { border: 1px solid var(--line-2); background: #fff; border-radius: 10px; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 13px; }
+  .wbtn.pri { background: var(--ai); border-color: var(--ai); color: #fff; }
+  .wbtn.danger { color: var(--rose); border-color: var(--rose-b); background: var(--rose-s); }
+  .otp { display: flex; gap: 6px; justify-content: center; margin: 14px 0; }
+  .otp span { width: 38px; height: 46px; border: 1.5px solid var(--line-2); border-radius: 9px; display: grid; place-items: center; font-size: 20px; font-weight: 700; }
+  .form { display: grid; gap: 8px; margin-top: 8px; }
+  .form select, .form textarea { border: 1px solid var(--line-2); border-radius: 9px; padding: 8px 10px; font-size: 13px; outline: none; width: 100%; }
+  .done { background: var(--ai-s); border: 1px solid var(--ai-b); color: var(--ai); border-radius: 10px; padding: 10px 12px; font-size: 13px; font-weight: 600; }
+  #toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13.5px; opacity: 0; transition: all .25s; pointer-events: none; max-width: 92vw; text-align: center; z-index: 60; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } .phone { position: static; margin: 0 auto; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand"><div class="logo">✆</div>Candidate experience <small>· what applicants see on their phone</small></div>
+  <div style="display:flex;gap:14px;font-size:13.5px"><a href="index.html" id="link-platform">Recruiter platform ↗</a><a href="ai-trail.html" id="link-audit">Audit trail ↗</a></div>
+</div></header>
+<main>
+  <section>
+    <div class="who">Candidate-facing · no app, no login</div>
+    <h1>Applicants talk to the agent on WhatsApp or SMS</h1>
+    <p class="lead">The agent asks only what's missing, sends updates and books interviews. Applicants can see their application data through a secure link (no password, just a code to their phone) and ask why they weren't selected. Scores and rankings are never shown to candidates.</p>
+    <div class="scs" id="scs"></div>
+    <div class="card"><h2>What happens in this story <span class="seg" id="chseg"><button data-ch="wa">WhatsApp</button><button data-ch="sms">SMS</button></span></h2><div class="steps" id="steps"></div>
+      <div class="tip">Tap the reply buttons, or type your own message, e.g. <span class="kbd">why was I rejected?</span> <span class="kbd">change time</span> <span class="kbd">talk to a person</span></div></div>
+    <div class="card" style="font-size:13px;color:var(--ink-2)"><h2>Rules the agent follows with candidates</h2>
+      <div style="display:grid;gap:5px">
+        <div>• Fixed, approved questions, and only for information that's missing.</div>
+        <div>• Anyone not selected can ask why and gets a short, polite reason.</div>
+        <div>• Candidates see their application data, never scores, rankings, criteria or review timings.</div>
+        <div>• Quiet hours 21:00–08:00. SMS if WhatsApp isn't available. Local languages.</div>
+        <div>• Anything it can't answer goes to a recruiter.</div>
+      </div></div>
+  </section>
+  <section><div class="phone" id="phone"></div></section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+(function () {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const lk = (t) => `<span class="lk" onclick="C.web()">${t}</span>`;
+
+  const SC = {
+    marcus: {
+      name: 'Marcus Vance', first: 'Marcus', ini: 'MV', color: '#0F766E', job: 'Warehouse Associate (night shift)', site: 'Dallas fulfilment centre', where: 'Dallas, United States', appId: 'A-20197', link: 'hr.link/m/7Q2', phone: '0142', applied: '31 Oct, 07:32', via: 'Career site (phone)', cv: 'Not attached',
+      blurb: 'No CV. Answers 3 questions, gets shortlisted, books an interview, views his application.',
+      steps: [['q3', 'Answers 3 quick questions (no CV needed)'], ['thanks', 'Told "we\'ll get back to you soon"'], ['booked', 'Shortlisted and books an interview slot'], ['web', 'Views his application data with a phone code']],
+      start: 'start',
+      nodes: {
+        start: { div: 'Sat 31 Oct · 07:33 · just after applying', bot: s => [`Hi Marcus 👋 Thanks for applying for Warehouse Associate (night shift) at the Dallas fulfilment centre.`, `You didn't attach a CV. No problem. 3 quick questions to complete your application.\nWe only use your answers for this application. Privacy: ${lk('hr.link/p')}`, '1/3 · The shift is 10 pm – 6 am, Sunday to Thursday. Can you work these hours?'],
+          opts: [{ l: 'Yes, that works', n: 'q2' }, { l: 'No, I need days', alt: 'In this story Marcus says yes. Try Lukas\'s story to see a "no".' }] },
+        q2: { bot: ['2/3 · The job means lifting boxes up to 23 kg (50 lb). Can you do that, with or without adjustments?'], opts: [{ l: 'Yes', n: 'q3' }, { l: 'With an adjustment', n: 'q2adj' }] },
+        q2adj: { bot: ['Thanks, that counts as yes. Needing an adjustment is never a reason to say no. You can discuss it at interview.'], next: 'q3' },
+        q3: { bot: ['3/3 · What was your most recent job, and for how long? Tap one or type your own.'], opts: [{ l: 'Line cook, 3 years', n: 'thanks', a: 'Line cook, 3 years' }, { l: 'Retail, 1 year', n: 'thanks', a: 'Retail, 1 year' }], free: 'thanks' },
+        thanks: { bot: [`Thanks, Marcus. Your application is complete ✅\nWe'll get back to you soon.`, `See your application anytime: ${lk('hr.link/m/7Q2')}`], opts: [{ l: '⏩ Skip ahead to the update', n: 'short', sys: true }] },
+        short: { div: 'Today · 10:04', bot: ['Good news, Marcus: you\'ve been shortlisted! 🎉', 'Pick a time for a 15-minute interview at the Dallas site:'], opts: [{ l: 'Mon 2 Nov · 10:00', n: 'booked', slot: 'Mon 2 Nov, 10:00' }, { l: 'Mon 2 Nov · 10:30', n: 'booked', slot: 'Mon 2 Nov, 10:30' }, { l: 'Tue 3 Nov · 14:00', n: 'booked', slot: 'Tue 3 Nov, 14:00' }, { l: 'None of these work', n: 'more' }] },
+        more: { bot: ['No problem. Here are more times:'], opts: [{ l: 'Tue 3 Nov · 16:30', n: 'booked', slot: 'Tue 3 Nov, 16:30' }, { l: 'Wed 4 Nov · 09:00', n: 'booked', slot: 'Wed 4 Nov, 09:00' }] },
+        booked: { bot: s => [`Booked ✅ ${s.f.slot} · Dallas fulfilment centre, Gate B. Bring a photo ID.\nWe'll remind you the day before. Reply CHANGE to pick another time.`], opts: [{ l: 'See my application', n: 'openweb' }, { l: 'Change time', n: 'more' }, { l: '⏩ Skip to the day-before reminder', n: 'remind', sys: true }] },
+        remind: { div: 'Sun 1 Nov · 10:00', bot: s => [`Reminder: your interview is tomorrow, ${s.f.slot}, at the Dallas fulfilment centre, Gate B. See you there!`], opts: [{ l: 'I\'ll be there 👍', n: 'see' }, { l: 'I need to change it', n: 'more' }] },
+        see: { bot: ['Great, see you tomorrow. Good luck! 🍀'] },
+        status: { bot: s => [s.f.slot ? `You haven't been turned down 🙂 You're shortlisted and booked for ${s.f.slot}.` : s.seen.has('short') ? 'You haven\'t been turned down 🙂 You\'re shortlisted. Please pick an interview time above.' : 'We\'re still reviewing your application. We\'ll get back to you soon.'] }
+      },
+      intent: (t, s) => /change|reschedul|another time/.test(t) ? (s.f.slot ? 'more' : 'pending') : /why|reject|status/.test(t) ? 'status' : null,
+      web: s => ({
+        status: s.f.slot ? ['Interview booked', 'ai'] : s.seen.has('short') ? ['Shortlisted', 'ai'] : s.seen.has('thanks') ? ['Being reviewed', 'amber'] : ['Questions to answer', 'amber'],
+        answers: [['Can you work 10 pm – 6 am, Sun–Thu?', s.seen.has('q2') ? 'Yes' : null], ['Can you lift up to 23 kg, with or without adjustments?', s.seen.has('q3') ? (s.seen.has('q2adj') ? 'With an adjustment' : 'Yes') : null], ['Most recent job', s.f.a || null]],
+        interview: s.f.slot ? `${s.f.slot} · Dallas fulfilment centre, Gate B` : null,
+        why: null
+      })
+    },
+    lukas: {
+      name: 'Lukas Weber', first: 'Lukas', ini: 'LW', color: '#B45309', job: 'Warehouse Associate (night shift)', site: 'Leipzig logistics centre', where: 'Leipzig, Germany', appId: 'A-20566', link: 'hr.link/m/4LK', phone: '0377', applied: '31 Oct, 07:09', via: 'Job board', cv: 'Attached (PDF)',
+      blurb: 'Can only work days. Isn\'t selected, asks why, and gets the real reason.',
+      steps: [['confirmNo', 'Asked to double-check before any "no"'], ['outcome', 'Told he wasn\'t selected'], ['why', 'Asks "Why was I rejected?" and gets the real reason'], ['web', 'Views his application data']],
+      start: 'start',
+      nodes: {
+        start: { div: 'Sat 31 Oct · 07:10 · just after applying', bot: [`Hallo Lukas 👋 Thanks for applying for Warehouse Associate (night shift) at the Leipzig logistics centre.\n(Shown in English here; sent in German.)`, 'Your form says you can only work day shifts. Can we double-check before we go further?', 'This job is 10 pm – 6 am. Could you work these hours?'],
+          opts: [{ l: 'No, only day shifts', n: 'confirmNo' }, { l: 'Yes, I can do nights', alt: 'In this story Lukas can only work days. Try Marcus\'s story for a "yes".' }] },
+        confirmNo: { bot: ['Thanks for confirming. We\'ll get back to you soon.'], opts: [{ l: '⏩ Skip ahead to the update', n: 'outcome', sys: true }] },
+        outcome: { div: 'Today · 10:12', bot: [`Hi Lukas, thank you for applying. We're sorry, but we can't take your application for this job further.`, `See your application: ${lk('hr.link/m/4LK')}`], opts: [{ l: 'Why was I rejected?', n: 'why' }, { l: 'See my application', n: 'openweb' }] },
+        why: { bot: ['This job requires working nights (10 pm – 6 am), and you told us you can only work day shifts, so we couldn\'t take your application further.', 'Thanks again for your interest, and we wish you the best.'], opts: [{ l: 'See my application', n: 'openweb' }] }
+      },
+      intent: t => /why|reject|reason|not selected/.test(t) ? 'why' : null,
+      web: s => ({
+        status: s.seen.has('outcome') ? ['Not selected', 'rose'] : ['Being reviewed', 'amber'],
+        answers: [['Shifts you can work (form)', 'Day shifts only'], ['Allowed to work in Germany (form)', 'Yes'], ['Can you lift up to 23 kg, with or without adjustments? (form)', 'Yes'], ['Could you work 10 pm – 6 am? (WhatsApp)', s.seen.has('confirmNo') ? 'No, only day shifts' : null]],
+        interview: null,
+        why: s.seen.has('outcome') ? 'This job requires working nights (10 pm – 6 am), and you told us you can only work day shifts, so we couldn\'t take your application further.' : null
+      })
+    },
+    priya: {
+      name: 'Priya Nair', first: 'Priya', ini: 'PN', color: '#7C3AED', job: 'Sorting Associate (morning shift)', site: 'Bengaluru sorting hub', where: 'Bengaluru, India', appId: 'A-20431', link: 'hr.link/m/9PN', phone: '0451', applied: '31 Oct, 08:01', via: 'WhatsApp link', cv: 'Attached (PDF)',
+      blurb: 'Meets the requirements but isn\'t selected this time. Asks why and gets a plain answer.',
+      steps: [['start', 'Gets a privacy notice and 1 question'], ['outcome', 'Told she wasn\'t selected this time'], ['why', 'Asks why and gets the reason'], ['web', 'Views her application data']],
+      start: 'start',
+      nodes: {
+        start: { div: 'Sat 31 Oct · 08:02 · just after applying', bot: [`Namaste Priya 👋 Thanks for applying for Sorting Associate (morning shift) at the Bengaluru sorting hub.`, `We use your answers only for this application. Privacy notice: ${lk('hr.link/p')}\nYou can reply in English, हिन्दी or ಕನ್ನಡ.`, 'The shift is 6 am – 2 pm, Monday to Saturday. Does that work for you?'], opts: [{ l: 'Yes, that works', n: 'thanks' }, { l: 'No', alt: 'In this story Priya says yes. Try Lukas\'s story to see a "no".' }] },
+        thanks: { bot: ['Thanks! Your application is complete ✅\nWe\'ll get back to you soon.'], opts: [{ l: '⏩ Skip ahead to the update', n: 'outcome', sys: true }] },
+        outcome: { div: 'Today · 09:46', bot: ['Hi Priya, thanks for applying. We\'ve gone through your application carefully, but we\'ve found other candidates who more closely match the requirements for this job, so we won\'t be moving forward with your application this time.', `We'll keep your details and let you know if a suitable role comes up. Reply STOP to opt out.\nSee your application: ${lk('hr.link/m/9PN')}`], opts: [{ l: 'Why wasn\'t I selected?', n: 'why' }, { l: 'See my application', n: 'openweb' }] },
+        why: { bot: ['We reviewed your application carefully. While you met the basic requirements, other candidates matched the job requirements more closely. This isn\'t a reflection on you, and we\'d encourage you to apply for other roles with us.'], opts: [{ l: 'See my application', n: 'openweb' }] }
+      },
+      intent: t => /why|not (shortlist|select)|reject|reason/.test(t) ? 'why' : null,
+      web: s => ({
+        status: s.seen.has('outcome') ? ['Not selected this time', 'amber'] : ['Being reviewed', 'amber'],
+        answers: [['Allowed to work in India (form)', 'Yes'], ['Can you lift up to 15 kg, with or without adjustments? (form)', 'Yes'], ['Shifts you can work (form)', 'Mornings, weekends'], ['Can you work 6 am – 2 pm, Mon–Sat? (WhatsApp)', s.seen.has('thanks') ? 'Yes' : null]],
+        interview: null,
+        why: s.seen.has('outcome') ? 'We reviewed your application carefully. While you met the basic requirements, other candidates matched the job requirements more closely. This isn\'t a reflection on you, and we\'d encourage you to apply for other roles with us.' : null
+      })
+    }
+  };
+  const COMMON = {
+    human: { bot: ['Sure. I\'ve passed your message to a recruiter, who will get back to you soon.'] },
+    data: { bot: s => [`You can see your application data here (no password, just a code to your phone): ${lk(SC[s.sc].link)}\nFor anything else about your data, a recruiter will get back to you soon.`], opts: [{ l: 'Open it', n: 'openweb' }] },
+    stop: { bot: ['You\'re unsubscribed from job updates. We\'ll only message you about this application. Reply START to opt back in.'] },
+    pending: { bot: ['We\'re still reviewing your application. We\'ll get back to you soon.'] },
+    fallback: { bot: ['Sorry, I can only help with this application: your status, booking an interview, or why a decision was made. I\'ve passed your message to a recruiter, who will get back to you soon.'] },
+    openweb: { web: true }
+  };
+
+  const S = { sc: 'marcus', ch: 'wa', log: [], seen: new Set(), opts: [], typing: false, view: 'chat', otp: false, f: {}, form: null, cur: null, free: null, busy: false };
+  const node = k => SC[S.sc].nodes[k] || COMMON[k];
+  let clock = 0, base = 7 * 60 + 33;
+  const tm = () => { const t = base + (clock++); return `${String(Math.floor(t / 60) % 24).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
+
+  function go(k) {
+    const n = node(k); if (!n) return;
+    if (n.web) { S.seen.add('web'); S.view = 'web'; render(); autoStep(); return; }
+    S.seen.add(k); S.cur = k; S.opts = []; S.free = n.free || null;
+    const q = [];
+    if (n.div) q.push({ div: n.div });
+    (typeof n.bot === 'function' ? n.bot(S) : (n.bot || [])).forEach(t => q.push({ who: 'bot', t }));
+    S.busy = true;
+    play(q, () => { S.busy = false; if (n.next) return go(n.next); S.opts = n.opts || []; render(); autoStep(); });
+  }
+  function play(q, cb) {
+    let i = 0;
+    const step = () => {
+      if (i >= q.length) { S.typing = false; render(); return cb(); }
+      const m = q[i++];
+      if (m.div) { const mm = m.div.match(/(\d{2}):(\d{2})/); if (mm) { base = +mm[1] * 60 + +mm[2]; clock = 0; } S.log.push(m); render(); return setTimeout(step, 250); }
+      S.typing = true; render();
+      setTimeout(() => { S.typing = false; m.tm = tm(); S.log.push(m); render(); setTimeout(step, 180); }, 520 + Math.min(m.t.length, 200) * 2);
+    };
+    step();
+  }
+  function choose(i) {
+    const o = S.opts[i]; if (!o) return;
+    if (o.alt) { toast(o.alt); return; }
+    if (o.slot) S.f.slot = o.slot;
+    if (o.a) S.f.a = o.a;
+    if (!o.sys) S.log.push({ who: 'me', t: smsLabel(o, i), tm: tm() });
+    S.opts = []; render();
+    setTimeout(() => go(o.n), 250);
+  }
+  const smsLabel = (o, i) => S.ch === 'sms' && !o.sys ? `${i + 1}` : o.l;
+  function send(text) {
+    text = text.trim(); if (!text || S.busy) return;
+    S.log.push({ who: 'me', t: text, tm: tm() }); S.opts = []; render();
+    const t = text.toLowerCase();
+    if (S.ch === 'sms' && /^\d$/.test(t)) { const idx = +t - 1; const o = node(S.cur) && (node(S.cur).opts || [])[idx]; if (o) { S.log.pop(); S.log.push({ who: 'me', t: text, tm: tm() }); if (o.slot) S.f.slot = o.slot; return setTimeout(() => go(o.n), 250); } }
+    let k = null;
+    if (S.free) { k = S.free; S.f.a = text; }
+    else if (/^stop$/.test(t)) k = 'stop';
+    else if (/person|human|recruiter|agent/.test(t)) k = 'human';
+    else if (/data|delete|privacy|gdpr|download/.test(t)) k = 'data';
+    else k = SC[S.sc].intent(t, S) || 'fallback';
+    setTimeout(() => go(k), 250);
+  }
+
+  /* ---------- Web page ---------- */
+  function webHTML() {
+    const sc = SC[S.sc];
+    if (!S.otp) return `<div class="page"><h3>Your application</h3><div class="sm">${sc.job} · ${sc.site}</div>
+      <p style="margin-top:16px;font-size:13.5px">To keep your data safe, enter the 6-digit code we just sent by SMS to •••• ${sc.phone}. No account or password needed.</p>
+      <div class="otp">${'482913'.split('').map(d => `<span>${d}</span>`).join('')}</div>
+      <button class="wbtn pri" style="width:100%;text-align:center" onclick="C.verify()">Verify and continue</button>
+      <div class="note">The link only works on the phone number you applied with, and expires after 30 days.</div></div>`;
+    const w = sc.web(S);
+    const rows = [['Job', sc.job], ['Location', sc.site], ['Applied', sc.applied], ['Applied via', sc.via], ['Phone', '•••• ' + sc.phone], ['Messages by', S.ch === 'wa' ? 'WhatsApp' : 'SMS'], ['CV', sc.cv]];
+    if (w.interview) rows.push(['Interview', w.interview]);
+    const ans = w.answers.filter(a => a[1]);
+    return `<div class="page">
+      <h3>Your application</h3><div class="sm">Application ${sc.appId}</div>
+      <span class="chip ${w.status[1]}">${w.status[0]}</span>
+      <div class="sect"><h4>Your details</h4><table class="mh">${rows.map(r => `<tr><td class="sm" style="width:38%">${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>
+      <div class="sect"><h4>Your answers</h4><table class="mh">${ans.length ? ans.map(a => `<tr><td>${a[0]}</td><td class="r">${a[1]}</td></tr>`).join('') : '<tr><td class="sm">No answers yet.</td></tr>'}</table></div>
+      ${w.why ? `<div class="sect"><h4>Decision</h4>${S.form === 'why' ? `<div class="note" style="font-size:13px;color:var(--ink-2)">${w.why}</div>` : `<button class="wbtn pri" style="width:100%" onclick="C.whyWeb()">Why wasn't I selected?</button>`}</div>` : ''}
+      <div class="note">Questions about your application or your data? Reply in the chat and a recruiter will get back to you soon.</div>
+    </div>`;
+  }
+
+  /* ---------- Render ---------- */
+  function render() {
+    const sc = SC[S.sc];
+    $('#scs').innerHTML = Object.entries(SC).map(([k, v]) => `<button class="sc ${S.sc === k ? 'on' : ''}" onclick="C.pick('${k}')"><span class="av" style="background:${v.color}">${v.ini}</span><span><b>${v.name}</b><span class="w">${v.job} · ${v.where}</span><div class="d">${v.blurb}</div></span></button>`).join('');
+    $('#steps').innerHTML = sc.steps.map((s, i) => { const done = S.seen.has(s[0]); return `<div class="st ${done ? 'done' : ''}"><span class="n">${done ? '✓' : i + 1}</span><span>${s[1]}</span></div>`; }).join('');
+    document.querySelectorAll('#chseg button').forEach(b => b.classList.toggle('on', b.dataset.ch === S.ch));
+    const ph = $('#phone');
+    ph.className = 'phone' + (S.ch === 'sms' ? ' sms' : '');
+    const head = S.ch === 'wa' ? `<div class="wa-h"><span class="pa">LC</span><div><b>Logistics Careers ✓</b><span>WhatsApp · verified business</span></div></div>` : `<div class="wa-h"><span class="pa">LC</span><div><b>Logistics Careers</b><span>Text message · +1 555 0142</span></div></div>`;
+    if (S.view === 'web') {
+      ph.innerHTML = `<div class="notch"><span>10:15</span><span>●●● 5G</span></div><div class="web"><div class="url"><button onclick="C.back()" aria-label="Back">←</button><div class="bar">🔒 ${sc.link}</div></div>${webHTML()}</div>`;
+      return;
+    }
+    const msgs = S.log.map(m => { const f = m._r ? '' : ' fresh'; m._r = true; return m.div ? `<div class="div${f}">${m.div}</div>` : `<div class="bub ${m.who}${f}">${m.t}<span class="tm">${m.tm || ''}${m.who === 'me' && S.ch === 'wa' ? ' ✓✓' : ''}</span></div>`; }).join('') + (S.typing ? '<div class="typing"><i></i><i></i><i></i></div>' : '');
+    const opts = S.opts.map((o, i) => `<button class="opt ${o.sys ? 'sys' : ''} ${i === 0 && !o.sys ? 'pulse' : ''}" onclick="C.choose(${i})">${S.ch === 'sms' && !o.sys ? `${i + 1} · ` : ''}${o.l}</button>`).join('');
+    ph.innerHTML = `<div class="notch"><span>10:15</span><span>●●● 5G</span></div>${head}<div class="body" id="body">${msgs}</div>${opts ? `<div class="opts">${opts}</div>` : ''}
+      <div class="inbar"><input id="msg" placeholder="${S.ch === 'sms' ? 'Text message' : 'Message'}" onkeydown="if(event.key==='Enter'){C.send(this.value);this.value='';}"><button onclick="const i=document.getElementById('msg');C.send(i.value);i.value='';" aria-label="Send">➤</button></div>`;
+    const b = $('#body'); if (b) b.scrollTop = b.scrollHeight;
+  }
+  function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 3000); }
+
+  function reset(sc) { Object.assign(S, { sc, log: [], seen: new Set(), opts: [], typing: false, view: 'chat', otp: false, f: {}, form: null, cur: null, free: null, busy: false }); clock = 0; base = 7 * 60 + 33; render(); go(SC[sc].start); }
+  window.C = {
+    pick(k) { reset(k); },
+    choose, send, toast,
+    web() { S.seen.add('web'); S.view = 'web'; render(); },
+    back() { S.view = 'chat'; render(); },
+    verify() { S.otp = true; render(); },
+    whyWeb() { S.form = 'why'; S.seen.add('why'); render(); }
+  };
+  document.querySelectorAll('#chseg button').forEach(b => b.onclick = () => { S.ch = b.dataset.ch; render(); toast(S.ch === 'sms' ? 'SMS view: reply with numbers, or type.' : 'WhatsApp view: tap-to-answer buttons.'); });
+  const q = new URLSearchParams(location.search);
+  if (q.get('ch') === 'sms') S.ch = 'sms';
+  const PATH = (q.get('path') || '').split(',').filter(Boolean);
+  function autoStep() {
+    if (!PATH.length) return;
+    const p = PATH.shift();
+    setTimeout(() => { if (p === 'w') { C.web(); autoStep(); } else if (p === 'v') { C.verify(); autoStep(); } else if (p.startsWith('t:')) send(decodeURIComponent(p.slice(2))); else choose(+p); }, 200);
+  }
+  reset(SC[q.get('s')] ? q.get('s') : 'marcus');
+})();
+</script>
+</body>
+</html>

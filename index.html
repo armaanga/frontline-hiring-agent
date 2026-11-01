@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workforce Cloud · Recruiting: AI Screening Agent</title>
+<meta name="description" content="Prototype: an AI Screening Agent inside an HR platform's recruiting module. Applications, agent runs, settings and audit trail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="platform.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="tb-logo"><div class="mk">W</div>Workforce Cloud <small>Recruiting</small></div>
+  <div class="tb-search">Search people, requisitions, applications…</div>
+  <div class="tb-r">
+    <a href="candidate.html" target="_blank" id="link-candidate">Candidate view ↗</a>
+    <label style="display:flex;align-items:center;gap:6px;color:#94A3B8">View as
+      <select class="role" id="role" onchange="P.role(this.value)">
+        <option value="recruiter">Recruiter · J. Lee</option>
+        <option value="admin">Admin · M. Rossi</option>
+        <option value="auditor">Auditor · K. Osei</option>
+      </select></label>
+    <span id="tb-user"></span>
+  </div>
+</header>
+<div class="shell">
+  <aside class="side" id="side"></aside>
+  <main class="content" id="content"></main>
+</div>
+<div class="scrim" id="scrim" onclick="P.close()"></div>
+<aside class="drawer" id="drawer" aria-label="Application details"></aside>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="platform.js"></script>
+</body>
+</html>

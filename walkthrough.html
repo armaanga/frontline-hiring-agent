@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frontline Hiring Agent: Prototype</title>
+<meta name="description" content="Guided prototype: the recruiter sets up a job, the AI agent checks must-haves, ranks eligible applicants, shortlists the top N and books interviews over WhatsApp and SMS, with a full audit trail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand"><div class="logo">FH</div>Frontline Hiring Agent <small>· prototype with sample data</small></div>
+  <div class="top-r"><button class="linkbtn" id="btn-reset" onclick="J.reset()">↺ Start again</button><a href="ai-trail.html" id="link-audit">Audit trail (D3) ↗</a></div>
+</div></header>
+<nav class="jbar" id="jbar" aria-label="Journey steps"></nav>
+<main><div class="stage" id="stage"></div></main>
+<div class="scrim" id="scrim" onclick="J.close()"></div>
+<aside class="drawer" id="drawer" aria-label="Applicant audit trail"></aside>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="journey.js"></script>
+</body>
+</html>
