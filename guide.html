@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to navigate the prototypes</title>
+<meta name="description" content="A 5-minute guide to the Frontline Hiring Agent prototypes: recruiter/admin/auditor platform view and candidate WhatsApp/SMS view.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 11mm 14mm 10mm 14mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', system-ui, sans-serif; color: #0F172A; font-size: 9.4pt; line-height: 1.42; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0; }
+  @media screen { body { background: #F3F5F8; font-size: 14.5px; } .wrap { background: #fff; margin: 24px auto; padding: 32px 36px; border-radius: 14px; border: 1px solid #E2E8F0; } }
+  .eyebrow { font-size: 7.8pt; font-weight: 700; color: #0F766E; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { font-size: 17pt; letter-spacing: -0.02em; line-height: 1.2; margin-top: 2px; }
+  .lead { color: #334155; margin-top: 4px; padding-bottom: 8px; border-bottom: 2px solid #0F766E; }
+  h2 { font-size: 11.5pt; margin: 13px 0 5px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
+  h2 .b { font-size: 8pt; font-weight: 700; color: #fff; background: #0F766E; border-radius: 6px; padding: 2px 7px; }
+  h2 .b.blue { background: #1D4ED8; } h2 .b.green { background: #16A34A; } h2 .b.grey { background: #64748B; }
+  .links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .lk { border: 1px solid #E2E8F0; border-radius: 9px; padding: 8px 10px; background: #F8FAFC; }
+  .lk b { display: block; font-size: 9.6pt; }
+  .lk code { font-size: 8.4pt; color: #1D4ED8; }
+  .lk span { font-size: 8.4pt; color: #64748B; display: block; margin-top: 2px; }
+  .sub { color: #475569; font-size: 9pt; margin-bottom: 5px; }
+  ol.tour { list-style: none; counter-reset: s; display: grid; gap: 6px; }
+  ol.tour li { counter-increment: s; position: relative; padding: 7px 10px 7px 38px; border: 1px solid #E2E8F0; border-radius: 9px; background: #fff; }
+  ol.tour li::before { content: counter(s); position: absolute; left: 10px; top: 8px; width: 19px; height: 19px; border-radius: 50%; background: #ECFDF8; color: #0F766E; border: 1px solid #A7F3D0; font-weight: 700; font-size: 8.5pt; display: grid; place-items: center; }
+  ol.tour.blue li::before { background: #EFF4FF; color: #1D4ED8; border-color: #C7D7FE; }
+  ol.tour li b.t { display: block; }
+  .ui { font-weight: 600; background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 5px; padding: 0 5px; white-space: nowrap; font-size: 0.95em; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .box { border: 1px solid #E2E8F0; border-radius: 9px; padding: 8px 11px; background: #F8FAFC; }
+  .box h3 { font-size: 9.6pt; margin-bottom: 3px; }
+  .box ul { padding-left: 15px; } .box li { margin-bottom: 2px; }
+  .note { margin-top: 12px; font-size: 8.6pt; color: #64748B; border-top: 1px solid #E2E8F0; padding-top: 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  td { padding: 4px 6px; border-top: 1px solid #E2E8F0; vertical-align: top; }
+  td:first-child { font-weight: 600; width: 23%; }
+</style>
+</head>
+<body><div class="wrap">
+
+<div class="eyebrow">Prototype guide · 5 minutes</div>
+<h1>How to navigate the Frontline Hiring Agent prototypes</h1>
+<p class="lead">There are two prototypes. One shows what <b>recruiters, admins and auditors</b> see inside the HR platform; the other shows what <b>candidates</b> see on their phone. All names and data are made up, and dates are set around 24–31 Oct 2026. Best viewed in a desktop browser.</p>
+
+<div class="links">
+  <div class="lk"><b>Platform (recruiter / admin)</b><code>index.html</code><span>Start here: the agent inside the HR platform</span></div>
+  <div class="lk"><b>AI trail (auditor)</b><code>ai-trail.html</code><span>Opens the Audit trail as an auditor</span></div>
+  <div class="lk"><b>Candidate experience</b><code>candidate.html</code><span>WhatsApp/SMS on the candidate's phone</span></div>
+</div>
+
+<h2><span class="b blue">1</span>Platform: recruiter, admin and auditor view</h2>
+<p class="sub">Left menu: the platform's normal pages (Home, Requisitions…) are placeholders. The new pages are under <span class="ui">✦ AI Screening Agent</span>. Use <span class="ui">View as</span> (top right) to switch between Recruiter, Admin and Auditor (auditors can't edit settings).</p>
+<table>
+  <tr><td>Overview</td><td>Last-7-day numbers, anything waiting for approval, and whether the agent is on in each country.</td></tr>
+  <tr><td>Agent runs</td><td>Every time the agent processed new applications, per job and day. Open one to see checks, ranking, invites and messages.</td></tr>
+  <tr><td>Settings</td><td>How often the agent runs, how many to shortlist per job, reserve list, approvals per country, messaging rules, safety limits.</td></tr>
+  <tr><td>Audit trail</td><td>Every decision for every applicant, filterable by date, country and job, with exports.</td></tr>
+</table>
+<p class="sub" style="margin-top:8px"><b>Suggested tour:</b></p>
+<ol class="tour blue">
+  <li><b class="t">See the agent on the existing Applications page</b>Open <span class="ui">Applications</span>. Three columns marked ✦ are added by the agent (status, score, channel). Switch between the Dallas, Bengaluru and Leipzig job tabs. Click <b>Marcus Vance</b> to open his <span class="ui">✦ Agent activity</span>, the full time-stamped trail.</li>
+  <li><b class="t">Review and approve today's shortlist</b>Click <span class="ui">Review shortlist (10) →</span> on the green banner. Use <span class="ui">−</span> / <span class="ui">+</span> to change the shortlist size and watch the cut-off line move. Click anyone below the line, then <span class="ui">Add to shortlist</span>; the reason is logged. Click <span class="ui">Approve &amp; invite top 10</span>, then open the <span class="ui">Invites</span> tab to see bookings and declines.</li>
+  <li><b class="t">Change a setting</b>Open <span class="ui">Settings</span>. Try a different run frequency or shortlist size, then click <span class="ui">Save changes</span>. Germany's automatic options are locked on purpose.</li>
+  <li><b class="t">Audit it</b>Open <span class="ui">Audit trail</span> (or switch <span class="ui">View as</span> to Auditor). Filter by <b>date range</b>, <b>country</b>, job or outcome, then click any row to see what the agent checked, how it ranked them, who approved, and what they were told. Check the <span class="ui">Agent runs</span> and <span class="ui">Settings changes</span> tabs (your saved change appears there), the fairness table at the bottom, and <span class="ui">Export CSV</span> / <span class="ui">Export (JSON)</span>.</li>
+</ol>
+
+<h2><span class="b green">2</span>Candidate experience: the applicant's phone</h2>
+<ol class="tour">
+  <li><b class="t">Pick a story on the left</b><b>Marcus</b>: no CV, answers 3 questions, gets shortlisted and books an interview. <b>Lukas</b>: can't work the required shift, isn't selected, asks why. <b>Priya</b>: meets the requirements but isn't selected, asks why.</li>
+  <li><b class="t">Reply in the phone</b>Tap the reply buttons. The dashed <span class="ui">⏩ Skip ahead to the update</span> button jumps forward in time. You can also type your own message, e.g. <i>"why was I rejected?"</i>, <i>"change time"</i> or <i>"talk to a person"</i>.</li>
+  <li><b class="t">Open "My application"</b>Tap the link in the chat or <span class="ui">See my application</span>, then <span class="ui">Verify and continue</span> (the code is pre-filled). The page shows the candidate's details and answers. If they weren't selected, there's a <span class="ui">Why wasn't I selected?</span> button.</li>
+  <li><b class="t">Try SMS</b>Switch <span class="ui">WhatsApp</span> / <span class="ui">SMS</span> in the "What happens in this story" card. The checklist there ticks off each step as you go.</li>
+</ol>
+
+<div class="two" style="margin-top:12px">
+  <div class="box"><h3>What to notice</h3><ul>
+    <li>Missing information leads to a question on WhatsApp/SMS, not a rejection.</li>
+    <li>Recruiters set the shortlist size and approve it; Germany always needs a recruiter.</li>
+    <li>Every step is recorded for auditors and can't be edited.</li>
+    <li>Candidates never see scores or rankings, only their own data and a short reason if not selected.</li>
+  </ul></div>
+  <div class="box"><h3>Also available</h3><ul>
+    <li><code>walkthrough.html</code>: an older guided 5-step walkthrough of one batch of applications.</li>
+    <li><code>D1_Decision_Brief.pdf</code> and <code>D2_Build_Sheet.pdf</code>.</li>
+    <li>Refresh the page to reset any prototype.</li>
+  </ul></div>
+</div>
+
+<p class="note">Prototype only: sample data, no real candidates or messages. Messages are shown in English; in live use they'd be sent in the applicant's language.</p>
+</div></body>
+</html>
